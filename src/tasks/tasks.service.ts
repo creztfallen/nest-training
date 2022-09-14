@@ -2,16 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { TaskStatus } from './tasks-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-task-filter.dto';
-import { TaskRepository } from './task.repository';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Task } from './task.entity';
+import { PrismaClient, Tasks } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 @Injectable()
 export class TasksService {
-  constructor(
-    @InjectRepository(TaskRepository)
-    private tasksRepository: TaskRepository,
-  ) {}
+  constructor() {}
 
   //   getAllTasks(): Task[] {
   //     return this.tasks;
@@ -34,8 +31,12 @@ export class TasksService {
   //   return tasks;
   // }
 
-  async getTaskById(id: string): Promise<Task> {
-    const found = await this.tasksRepository.findOne(id);
+  async getTaskById(id: string): Promise<Tasks> {
+    const found: Tasks = await prisma.tasks.findUnique({
+      where: {
+        id,
+      },
+    });
 
     if (!found) {
       throw new NotFoundException();
@@ -43,25 +44,15 @@ export class TasksService {
     return found;
   }
 
-  //   getTaskById(id: string) {
-  //     const found = this.tasks.find((tasks) => tasks.id === id);
-  //     if (!found) {
-  //       throw new NotFoundException();
-  //     }
-  //     return found;
-  //   }
+  async createTask(createTaskDto: CreateTaskDto): Promise<Tasks> {
+    const { title, description } = createTaskDto;
+    const task = prisma.tasks.create({
+      data: { title, description, status: TaskStatus.OPEN },
+    });
 
-  //   createTask(CreateTaskDto: CreateTaskDto): Task {
-  //     const { title, description } = CreateTaskDto;
-  //     const task: Task = {
-  //       id: uuid(),
-  //       title,
-  //       description,
-  //       status: TaskStatus.OPEN,
-  //     };
-  //     this.tasks.push(task);
-  //     return task;
-  //   }
+    return task;
+  }
+
   //   deleteTask(id: string): void {
   //     const found = this.getTaskById(id);
   //     this.tasks = this.tasks.filter((task) => task.id !== found.id);

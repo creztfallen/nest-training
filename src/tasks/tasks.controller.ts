@@ -8,10 +8,10 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { Tasks } from '@prisma/client';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-task-filter.dto';
 import { PatchTaskDto } from './dto/patch-task.dto';
-import { Task } from './task.entity';
 import { TaskStatus } from './tasks-status.enum';
 import { TasksService } from './tasks.service';
 
@@ -29,14 +29,14 @@ export class TasksController {
   // }
 
   @Get(':id')
-  getTaskById(@Param('id') id: string): Promise<Task> {
+  getTaskById(@Param('id') id: string): Promise<Tasks> {
     return this.tasksService.getTaskById(id);
   }
 
-  // @Post()
-  // createTask(@Body() CreateTaskDto: CreateTaskDto): Task {
-  //   return this.tasksService.createTask(CreateTaskDto);
-  // }
+  @Post()
+  createTask(@Body() CreateTaskDto: CreateTaskDto): Promise<Tasks> {
+    return this.tasksService.createTask(CreateTaskDto);
+  }
 
   // @Delete(':id')
   // deleteTask(@Param('id') id: string) {
