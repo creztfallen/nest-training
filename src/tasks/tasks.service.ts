@@ -1,65 +1,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TaskStatus } from './tasks-status.enum';
+import { Status } from '@prisma/client';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-task-filter.dto';
 import { PrismaClient, Tasks } from '@prisma/client';
+import { TasksRepository } from './tasks.repository';
 
 const prisma = new PrismaClient();
 
 @Injectable()
 export class TasksService {
-  constructor() {}
+  constructor(private tasksRepository: TasksRepository) {}
 
-  //   getAllTasks(): Task[] {
-  //     return this.tasks;
-  //   }
-
-  // getTaskWithFilters(filterDto: GetTasksFilterDto): Task[] {
-  //   const { status, search } = filterDto;
-  //   let tasks = this.getAllTasks();
-  //   if (status) {
-  //     tasks = tasks.filter((task) => task.status === status);
-  //   }
-  //   if (search) {
-  //     tasks = tasks.filter((task) => {
-  //       if (task.title.includes(search) || task.description.includes(search)) {
-  //         return true;
-  //       }
-  //       return false;
-  //     });
-  //   }
-  //   return tasks;
-  // }
-
-  async getTaskById(id: string): Promise<Tasks> {
-    const found: Tasks = await prisma.tasks.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!found) {
-      throw new NotFoundException();
-    }
-    return found;
+  getTasks(filterDto: GetTasksFilterDto): Promise<Tasks[]> {
+    return this.tasksRepository.getTasks(filterDto);
   }
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Tasks> {
-    const { title, description } = createTaskDto;
-    const task = prisma.tasks.create({
-      data: { title, description, status: TaskStatus.OPEN },
-    });
-
-    return task;
+  getTaskById(id: string): Promise<Tasks> {
+    return this.tasksRepository.getTaskById(id);
   }
 
-  //   deleteTask(id: string): void {
-  //     const found = this.getTaskById(id);
-  //     this.tasks = this.tasks.filter((task) => task.id !== found.id);
-  //   }
-  //   updateTask(id: string, status: TaskStatus) {
-  //     const task = this.getTaskById(id);
-  //     task.status = status;
-  //     return task;
-  //   }
+  createTask(createTaskDto: CreateTaskDto): Promise<Tasks> {
+    return this.tasksRepository.createTask(createTaskDto);
+  }
+
+  deleteTask(id: string): Promise<void> {
+    return this.tasksRepository.deleteTask(id);
+  }
+
+  updateTask(id: string, status: Status) {
+    return this.tasksRepository.updateTask(id, status);
+  }
 }
