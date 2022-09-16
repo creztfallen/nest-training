@@ -8,21 +8,24 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { Tasks } from '@prisma/client';
+import { Status, Tasks } from '@prisma/client';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-task-filter.dto';
 import { PatchTaskDto } from './dto/patch-task.dto';
-import { Status } from '@prisma/client';
+
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
-  // @Get()
-  // getTasks(@Query('status') filterDto: GetTasksFilterDto): Promise<Tasks[]> {
-  //   return this.tasksService.getTasks(filterDto);
-  // }
+  @Get()
+  getTasks(
+    @Query('status') status: Status,
+    @Query('search') search: string,
+  ): Promise<Tasks[]> {
+    return this.tasksService.getTasks(status, search);
+  }
 
   @Get(':id')
   getTaskById(@Param('id') id: string): Promise<Tasks> {

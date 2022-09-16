@@ -5,14 +5,12 @@ import { GetTasksFilterDto } from './dto/get-task-filter.dto';
 import { PrismaClient, Tasks } from '@prisma/client';
 import { TasksRepository } from './tasks.repository';
 
-const prisma = new PrismaClient();
-
 @Injectable()
 export class TasksService {
   constructor(private tasksRepository: TasksRepository) {}
 
-  getTasks(filterDto: GetTasksFilterDto): Promise<Tasks[]> {
-    return this.tasksRepository.getTasks(filterDto);
+  getTasks(status: Status, search: string): Promise<Tasks[]> {
+    return this.tasksRepository.getTasks(status, search);
   }
 
   getTaskById(id: string): Promise<Tasks> {

@@ -10,8 +10,18 @@ const prisma = new PrismaClient();
 export class TasksRepository {
   constructor() {}
 
-  async getTasks(filterDto: GetTasksFilterDto): Promise<Tasks[]> {
-    const { status } = filterDto;
+  async getTasks(status: Status, search: string): Promise<Tasks[]> {
+    // const { status, search } = filterDto;
+
+    if (search) {
+      return await prisma.tasks.findMany({
+        where: {
+          title: {
+            contains: search,
+          },
+        },
+      });
+    }
 
     if (status) {
       return await prisma.tasks.findMany({
