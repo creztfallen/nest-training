@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { PrismaClient, Tasks } from '@prisma/client';
 import { Status } from '@prisma/client';
-import { GetTasksFilterDto } from './dto/get-task-filter.dto';
 
 const prisma = new PrismaClient();
 
