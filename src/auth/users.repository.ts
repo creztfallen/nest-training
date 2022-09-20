@@ -11,6 +11,10 @@ const prisma = new PrismaClient();
 
 @Injectable()
 export class usersRepository {
+  async getUser(username: string) {
+    return await prisma.users.findFirst({ where: { username } });
+  }
+
   async createUser(authDto: AuthCredentialsDto): Promise<void> {
     const { username, password } = authDto;
 
@@ -19,7 +23,7 @@ export class usersRepository {
 
     const found = await prisma.users.findFirst({ where: { username } });
 
-    const user = await prisma.users.create({
+    await prisma.users.create({
       data: {
         username,
         password: hashed,
