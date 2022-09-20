@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaClient, Users } from '@prisma/client';
 import { AuthCredentialsDto } from './dto/auth-credenials.dto';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -13,12 +14,15 @@ export class usersRepository {
   async createUser(authDto: AuthCredentialsDto): Promise<void> {
     const { username, password } = authDto;
 
+    const salt = await bcrypt.genSalt(10);
+    const hashed = await bcrypt.hash(password, salt);
+
     const found = await prisma.users.findFirst({ where: { username } });
 
     const user = await prisma.users.create({
       data: {
         username,
-        password,
+        password: hashed,
       },
     });
 
