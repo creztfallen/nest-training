@@ -10,7 +10,7 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 @Injectable()
-export class usersRepository {
+export class UsersRepository {
   async getUser(username: string) {
     return await prisma.users.findFirst({ where: { username } });
   }
