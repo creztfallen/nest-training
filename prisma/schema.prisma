@@ -5,6 +5,12 @@ model Tasks {
   status      Status
 }
 
+model Users {
+  id       String @id @default(uuid())
+  username String
+  password String
+}
+
 generator client {
   provider = "prisma-client-js"
 }
